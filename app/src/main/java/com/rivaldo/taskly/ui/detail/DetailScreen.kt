@@ -8,13 +8,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.rivaldo.taskly.ui.theme.AeroBlue
-import com.rivaldo.taskly.ui.theme.Melon
 import com.rivaldo.taskly.ui.utils.GetTopAppBarColor
 import org.koin.androidx.compose.koinViewModel
 

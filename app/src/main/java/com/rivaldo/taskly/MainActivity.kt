@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rivaldo.taskly.ui.add.AddScreen
 import com.rivaldo.taskly.ui.detail.DetailScreen
 import com.rivaldo.taskly.ui.home.HomeScreen
 import com.rivaldo.taskly.ui.home.HomeViewModel
@@ -45,8 +46,7 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(navController = navController)
                         }
                         composable(DestinationScreen.ADD_TASK.getRoute()) { navBackStackEntry ->
-
-
+                            AddScreen(navController = navController)
                         }
                         composable(DestinationScreen.DETAIL.getRoute()) { navBackStackEntry ->
                             val taskId =

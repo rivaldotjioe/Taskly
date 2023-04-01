@@ -9,6 +9,6 @@ interface TaskRepository {
     fun getTaskById(id: String) : Flow<TaskModel?>
     fun searchTaskByKeyword(keyword: String) : Flow<List<TaskModel>>
     fun markCompleteTask(id: String) : Flow<Boolean>
-
     fun deleteTask(id: String) : Flow<Boolean>
+    fun addTask(task: TaskModel) : Flow<Boolean>
 }

@@ -45,7 +45,7 @@ class TaskRepositoryDummy : TaskRepository {
     }
 
     override fun deleteTask(id: String): Flow<Boolean> {
-return flow {
+        return flow {
             val task = DataDummyProvider.listTask.find { it.id == id }
             if (task != null) {
                 DataDummyProvider.listTask.remove(task)
@@ -53,6 +53,15 @@ return flow {
             } else {
                 emit(false)
             }
+        }
+    }
+
+    override fun addTask(task: TaskModel): Flow<Boolean> {
+        return flow {
+            task.id = DataDummyProvider.listTask.size.toString()
+            DataDummyProvider.listTask.add(task)
+
+            emit(true)
         }
     }
 }
