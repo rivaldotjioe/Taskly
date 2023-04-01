@@ -30,4 +30,29 @@ class TaskRepositoryDummy : TaskRepository {
             emit(list)
         }
     }
+
+    override fun markCompleteTask(id: String): Flow<Boolean> {
+        return flow {
+            val task = DataDummyProvider.listTask.find { it.id == id }
+            if (task != null) {
+                val index = DataDummyProvider.listTask.indexOf(task)
+                DataDummyProvider.listTask[index] = task.copy(status = StatusTask.COMPLETED)
+                emit(true)
+            } else {
+                emit(false)
+            }
+        }
+    }
+
+    override fun deleteTask(id: String): Flow<Boolean> {
+return flow {
+            val task = DataDummyProvider.listTask.find { it.id == id }
+            if (task != null) {
+                DataDummyProvider.listTask.remove(task)
+                emit(true)
+            } else {
+                emit(false)
+            }
+        }
+    }
 }

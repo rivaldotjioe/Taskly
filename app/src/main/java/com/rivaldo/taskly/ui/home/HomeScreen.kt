@@ -13,13 +13,13 @@ import androidx.compose.material.icons.filled.Filter
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rivaldo.taskly.data.local.dummy.DataDummyProvider
@@ -37,6 +37,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val showDialogFilter = remember { mutableStateOf(false) }
     val currentTypeFilter = remember { mutableStateOf(0) }
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.initialize()
+    })
     Scaffold(
         topBar = {
             TopBarHomeScreen(
@@ -59,7 +62,12 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
             listIteratedStatus.forEach { status ->
                 val list =
                     if (status == StatusTask.ACTIVE) uiState.listActiveTask else uiState.listCompletedTask
-                ListSection(list = list, textSection = status.getText())
+                ListSection(list = list, textSection = status.getText()) {
+                    navController.navigate(
+                        DestinationScreen.DETAIL.getRoute()
+                            .replace("{" + DestinationScreen.ID_TASK_KEY + "}", it.id)
+                    )
+                }
 
             }
 //            item {
@@ -101,7 +109,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
 
 }
 
-fun LazyListScope.ListSection(list: List<TaskModel>, textSection: String) {
+fun LazyListScope.ListSection(
+    list: List<TaskModel>,
+    textSection: String,
+    onItemClicked: (TaskModel) -> Unit = {}
+) {
     item {
         Text(
             text = textSection + " (${list.size})",
@@ -111,7 +123,7 @@ fun LazyListScope.ListSection(list: List<TaskModel>, textSection: String) {
         )
     }
     items(list) { task ->
-        TaskCard(task)
+        TaskCard(task, onClick = onItemClicked)
     }
 }
 

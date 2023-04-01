@@ -16,9 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rivaldo.taskly.ui.detail.DetailScreen
 import com.rivaldo.taskly.ui.home.HomeScreen
+import com.rivaldo.taskly.ui.home.HomeViewModel
 import com.rivaldo.taskly.ui.theme.TasklyTheme
 import com.rivaldo.taskly.ui.utils.DestinationScreen
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -34,7 +37,6 @@ class MainActivity : ComponentActivity() {
                     val windowSize = calculateWindowSizeClass(activity = this)
                     val navController = rememberNavController()
                     val scope = rememberCoroutineScope()
-
                     NavHost(
                         navController = navController,
                         startDestination = DestinationScreen.HOME.getRoute()
@@ -50,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             val taskId =
                                 navBackStackEntry.arguments?.getString(DestinationScreen.ID_TASK_KEY)
                             taskId?.let {
-
+                                DetailScreen(navController = navController, idTask = it)
                             }
                         }
 
