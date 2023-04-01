@@ -13,7 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class HomeViewModel(val getAllTaskByStatus: GetAllTaskByStatus, val searchTaskByKeyword: SearchTaskByKeyword) : ViewModel() {
+class HomeViewModel(
+    val getAllTaskByStatus: GetAllTaskByStatus,
+    val searchTaskByKeyword: SearchTaskByKeyword
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState(isLoading = true))
     val uiState: StateFlow<HomeUIState> = _uiState
@@ -76,7 +79,29 @@ class HomeViewModel(val getAllTaskByStatus: GetAllTaskByStatus, val searchTaskBy
         }
     }
 
+    fun filterByStatus(status: StatusTask) {
+        viewModelScope.launch {
+            val listFilteredTask = async { getTaskByStatus(status) }
+            if (listFilteredTask.await() is Resource.Success) {
+                val listTask = listFilteredTask.await().data
+                if (status == StatusTask.ACTIVE) {
+                    _uiState.value = HomeUIState(
+                        listActiveTask = listTask ?: emptyList()
+                    )
+                } else {
+                    _uiState.value = HomeUIState(
+                        listCompletedTask = listTask ?: emptyList()
+                    )
+                }
+            } else {
+                _uiState.value = HomeUIState(
+                    isError = true,
+                    errorMessage = "Error"
+                )
+            }
+        }
 
+    }
 }
 
 data class HomeUIState(

@@ -25,18 +25,18 @@ import androidx.navigation.NavController
 import com.rivaldo.taskly.data.local.dummy.DataDummyProvider
 import com.rivaldo.taskly.domain.StatusTask
 import com.rivaldo.taskly.domain.listIteratedStatus
+import com.rivaldo.taskly.domain.listRadioStatus
 import com.rivaldo.taskly.domain.model.TaskModel
 import com.rivaldo.taskly.ui.theme.TitleTopBar
-import com.rivaldo.taskly.ui.utils.DestinationScreen
-import com.rivaldo.taskly.ui.utils.ExpandedSearchView
-import com.rivaldo.taskly.ui.utils.GetTopAppBarColor
-import com.rivaldo.taskly.ui.utils.TaskCard
+import com.rivaldo.taskly.ui.utils.*
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val showDialogFilter = remember { mutableStateOf(false) }
+    val currentTypeFilter = remember { mutableStateOf(0) }
     Scaffold(
         topBar = {
             TopBarHomeScreen(
@@ -45,7 +45,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
                     navController.navigate(DestinationScreen.ADD_TASK.getRoute())
                 },
                 onTextSearchChanged = { query -> viewModel.search(keyword = query) },
-                onSearchClosed = { viewModel.initialize() })
+                onSearchClosed = { viewModel.initialize() },
+                onFilterClick = { showDialogFilter.value = true }
+            )
         },
         contentColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -75,6 +77,28 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
 
         }
     }
+
+    if (showDialogFilter.value) {
+        DialogRadioString(
+            currentSelectedIndex = currentTypeFilter.value,
+            listOption = listRadioStatus,
+            onConfirm = { status, index ->
+                currentTypeFilter.value = index
+                val status = StatusTask.fromString(status)
+                if (status != null) {
+                    viewModel.filterByStatus(status)
+                } else {
+                    viewModel.initialize()
+                }
+                showDialogFilter.value = false
+
+            },
+            onCancel = {
+                showDialogFilter.value = false
+            })
+    }
+
+
 }
 
 fun LazyListScope.ListSection(list: List<TaskModel>, textSection: String) {
@@ -96,7 +120,8 @@ fun TopBarHomeScreen(
     title: String,
     onAddClick: () -> Unit,
     onTextSearchChanged: (String) -> Unit,
-    onSearchClosed: () -> Unit
+    onSearchClosed: () -> Unit,
+    onFilterClick: () -> Unit
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     Crossfade(targetState = expanded) { isExpandedSearch ->
@@ -111,7 +136,9 @@ fun TopBarHomeScreen(
             TopBarHomeCollapse(
                 title = title,
                 onAddClick = onAddClick,
-                onSearchClick = { setExpanded(true) })
+                onSearchClick = { setExpanded(true) },
+                onFilterClick = onFilterClick
+            )
         }
     }
 }
@@ -119,7 +146,12 @@ fun TopBarHomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarHomeCollapse(title: String, onAddClick: () -> Unit, onSearchClick: () -> Unit) {
+fun TopBarHomeCollapse(
+    title: String,
+    onAddClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -132,7 +164,7 @@ fun TopBarHomeCollapse(title: String, onAddClick: () -> Unit, onSearchClick: () 
             IconButton(onClick = onAddClick) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onFilterClick) {
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
             }
             IconButton(onClick = onSearchClick) {
