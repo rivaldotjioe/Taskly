@@ -1,9 +1,7 @@
 package com.rivaldo.taskly
 
 import android.app.Application
-import com.rivaldo.taskly.di.repositoryDummyModule
-import com.rivaldo.taskly.di.useCaseModule
-import com.rivaldo.taskly.di.viewModelModule
+import com.rivaldo.taskly.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -20,7 +18,10 @@ class AppResource : Application() {
             androidContext(this@AppResource)
             modules(
                 listOf(
-                    repositoryDummyModule,
+                    networkModule,
+                    localDataModule,
+                    repositoryModule,
+//                    repositoryDummyModule,
                     useCaseModule,
                     viewModelModule,
                 )

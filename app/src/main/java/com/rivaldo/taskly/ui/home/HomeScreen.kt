@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,14 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
         },
         contentColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
+        if (uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
@@ -65,23 +74,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
                 ListSection(list = list, textSection = status.getText()) {
                     navController.navigate(
                         DestinationScreen.DETAIL.getRoute()
-                            .replace("{" + DestinationScreen.ID_TASK_KEY + "}", it.id)
+                            .replace("{" + DestinationScreen.ID_TASK_KEY + "}", it.id.toString())
                     )
                 }
 
             }
-//            item {
-//                Text(text = "Active Task", style = TitleTopBar, color = Color.Black, modifier = Modifier.padding(8.dp))
-//            }
-//            items(uiState.listActiveTask) { task ->
-//                TaskCard(task)
-//            }
-//            item {
-//                Text(text = "Completed Task", style = TitleTopBar, color = Color.Black, , modifier = Modifier.padding(8.dp))
-//            }
-//            items(uiState.listCompletedTask) { task ->
-//                TaskCard(task)
-//            }
 
         }
     }

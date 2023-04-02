@@ -7,11 +7,15 @@ import com.rivaldo.taskly.domain.StatusTask
 import com.rivaldo.taskly.domain.model.TaskModel
 import com.rivaldo.taskly.domain.use_case.GetAllTaskByStatus
 import com.rivaldo.taskly.domain.use_case.SearchTaskByKeyword
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 class HomeViewModel(
     val getAllTaskByStatus: GetAllTaskByStatus,
@@ -26,7 +30,9 @@ class HomeViewModel(
     }
 
     fun initialize() {
-        viewModelScope.launch {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.emit(HomeUIState(isLoading = true))
             val getActiveTask = async { getTaskByStatus(StatusTask.ACTIVE) }
             val getCompletedTask = async { getTaskByStatus(StatusTask.COMPLETED) }
             if (getActiveTask.await() is Resource.Success && getCompletedTask.await() is Resource.Success) {
@@ -47,15 +53,9 @@ class HomeViewModel(
     }
 
     suspend fun getTaskByStatus(status: StatusTask): Resource<List<TaskModel>> {
-        lateinit var result: Resource<List<TaskModel>>
-        getAllTaskByStatus(status)
-            .catch {
-                result = Resource.Error(it.message ?: "Error", emptyList())
-            }
-            .collect { resource ->
-                result = Resource.Success(resource)
-            }
-
+        var result: Resource<List<TaskModel>> = Resource.Loading(emptyList())
+        val listTask = getAllTaskByStatus(status).first()
+        result = Resource.Success(listTask)
         return result
     }
 

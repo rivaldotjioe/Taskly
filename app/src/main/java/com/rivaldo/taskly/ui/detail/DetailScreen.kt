@@ -19,13 +19,16 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DetailScreen(
     navController: NavController,
-    idTask: String,
+    idTask: Int,
     viewModel: DetailViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = true, block = {
         viewModel.initialize(idTask = idTask)
     })
+    if (uiState.operationSuccess) {
+        navController.navigateUp()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,8 +69,14 @@ fun DetailScreen(
             }
         }
     ) { paddingValues ->
-        if (uiState.operationSuccess) {
-            navController.navigateUp()
+
+        if (uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
         Column(
             modifier = Modifier

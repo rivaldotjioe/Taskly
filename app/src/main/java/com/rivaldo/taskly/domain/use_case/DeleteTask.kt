@@ -3,5 +3,5 @@ package com.rivaldo.taskly.domain.use_case
 import com.rivaldo.taskly.data.repository.interfaces.TaskRepository
 
 class DeleteTask(val repository: TaskRepository) {
-    operator fun invoke(id: String) = repository.deleteTask(id)
+    operator fun invoke(id: Int) = repository.deleteTask(id)
 }

@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             val taskId =
                                 navBackStackEntry.arguments?.getString(DestinationScreen.ID_TASK_KEY)
                             taskId?.let {
-                                DetailScreen(navController = navController, idTask = it)
+                                DetailScreen(navController = navController, idTask = it.toInt())
                             }
                         }
 

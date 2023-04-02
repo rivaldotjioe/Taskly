@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
     fun getAllTaskByStatus(status: StatusTask) : Flow<List<TaskModel>>
-    fun getTaskById(id: String) : Flow<TaskModel?>
+    suspend fun getTaskById(id: Int) : Flow<TaskModel?>
     fun searchTaskByKeyword(keyword: String) : Flow<List<TaskModel>>
-    fun markCompleteTask(id: String) : Flow<Boolean>
-    fun deleteTask(id: String) : Flow<Boolean>
+    fun markCompleteTask(id: Int) : Flow<Boolean>
+    fun deleteTask(id: Int) : Flow<Boolean>
     fun addTask(task: TaskModel) : Flow<Boolean>
 }

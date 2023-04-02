@@ -20,8 +20,9 @@ class DetailViewModel(
     private var _uiState = MutableStateFlow(DetailUIState(isLoading = true))
     val uiState: StateFlow<DetailUIState> = _uiState
 
-    fun initialize(idTask: String) {
+    fun initialize(idTask: Int) {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             getTaskById(idTask)
                 .catch {
                     _uiState.value = DetailUIState(
@@ -37,8 +38,9 @@ class DetailViewModel(
         }
     }
 
-    fun markComplete(idTask: String) {
+    fun markComplete(idTask: Int) {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             markCompleteTask(idTask)
                 .catch {
                     _uiState.value = DetailUIState(
@@ -47,15 +49,14 @@ class DetailViewModel(
                     )
                 }
                 .collect {
-                    _uiState.value = DetailUIState(
-                        operationSuccess = it
-                    )
+                    _uiState.value = _uiState.value.copy(operationSuccess = it)
                 }
         }
     }
 
-    fun delete(idTask: String) {
+    fun delete(idTask: Int) {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             deleteTask(idTask)
                 .catch {
                     _uiState.value = DetailUIState(
@@ -64,9 +65,7 @@ class DetailViewModel(
                     )
                 }
                 .collect {
-                    _uiState.value = DetailUIState(
-                        operationSuccess = it
-                    )
+                    _uiState.value = _uiState.value.copy(operationSuccess = it)
                 }
         }
     }

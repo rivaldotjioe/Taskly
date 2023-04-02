@@ -17,7 +17,7 @@ class TaskRepositoryDummy : TaskRepository {
         }
     }
 
-    override fun getTaskById(id: String): Flow<TaskModel?> {
+    override suspend fun getTaskById(id: Int): Flow<TaskModel?> {
         return flow {
             val task = DataDummyProvider.listTask.find { it.id == id }
             emit(task)
@@ -31,7 +31,7 @@ class TaskRepositoryDummy : TaskRepository {
         }
     }
 
-    override fun markCompleteTask(id: String): Flow<Boolean> {
+    override fun markCompleteTask(id: Int): Flow<Boolean> {
         return flow {
             val task = DataDummyProvider.listTask.find { it.id == id }
             if (task != null) {
@@ -44,7 +44,7 @@ class TaskRepositoryDummy : TaskRepository {
         }
     }
 
-    override fun deleteTask(id: String): Flow<Boolean> {
+    override fun deleteTask(id: Int): Flow<Boolean> {
         return flow {
             val task = DataDummyProvider.listTask.find { it.id == id }
             if (task != null) {
@@ -58,7 +58,7 @@ class TaskRepositoryDummy : TaskRepository {
 
     override fun addTask(task: TaskModel): Flow<Boolean> {
         return flow {
-            task.id = DataDummyProvider.listTask.size.toString()
+            task.id = DataDummyProvider.listTask.size + 1
             DataDummyProvider.listTask.add(task)
 
             emit(true)
