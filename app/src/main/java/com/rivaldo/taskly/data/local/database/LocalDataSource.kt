@@ -9,4 +9,5 @@ class LocalDataSource(val taskDao: TaskDao) {
     suspend fun updateTask(taskEntity: TaskEntity) = taskDao.updateTask(taskEntity)
     suspend fun deleteTask(id: Int) = taskDao.deleteTaskById(id)
     fun getTaskByKeyword(keyword: String) = taskDao.searchTaskByKeyword(keyword)
+    fun getTaskByStatus(status: String) = taskDao.getTaskByStatus(status)
 }
