@@ -2,6 +2,7 @@ package com.rivaldo.taskly.data.repository
 
 import com.rivaldo.taskly.data.local.database.LocalDataSource
 import com.rivaldo.taskly.data.local.database.TaskDao
+import com.rivaldo.taskly.data.local.database.model.TaskEntity
 import com.rivaldo.taskly.data.mapper.DataMapper.mapToEntity
 import com.rivaldo.taskly.data.mapper.DataMapper.mapToModel
 import com.rivaldo.taskly.data.remote.ApiResponseCode
@@ -15,38 +16,49 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
-class TaskRepositoryImpl(val remoteDataSource: RemoteDataSource, val localDataSource: LocalDataSource) :
+class TaskRepositoryImpl(
+    val remoteDataSource: RemoteDataSource,
+    val localDataSource: LocalDataSource
+) :
     TaskRepository {
-    val scope = CoroutineScope(Dispatchers.IO)
 
-    override fun getAllTaskByStatus(status: StatusTask): Flow<List<TaskModel>> {
+    override suspend fun getAllTaskByStatus(status: StatusTask): Flow<List<TaskEntity>> {
         return flow {
             localDataSource.getTaskByStatus(status.name)
                 .collect {
-                    emit(it.map { it.mapToModel() })
+                    emit(it)
                 }
         }
     }
 
-    override suspend fun getTaskById(id: Int): Flow<TaskModel?> {
+    override suspend fun getAllTask(): Flow<List<TaskEntity>> {
+        return flow {
+            localDataSource.getAllTask()
+                .collect {
+                    emit(it)
+                }
+        }
+    }
+
+    override suspend fun getTaskById(id: Int): Flow<TaskEntity?> {
         return flow {
             localDataSource.getTaskById(id)
                 .collect {
-                    emit(it.mapToModel())
+                    emit(it)
                 }
         }
     }
 
-    override fun searchTaskByKeyword(keyword: String): Flow<List<TaskModel>> {
+    override suspend fun searchTaskByKeyword(keyword: String): Flow<List<TaskEntity>> {
         return flow {
             localDataSource.getTaskByKeyword(keyword)
                 .collect {
-                    emit(it.map { it.mapToModel() })
+                    emit(it)
                 }
         }
     }
 
-    override fun markCompleteTask(id: Int): Flow<Boolean> {
+    override suspend fun markCompleteTask(id: Int): Flow<Boolean> {
         return flow {
             try {
                 val taskEntity = localDataSource.getTaskById(id).first()
@@ -59,7 +71,7 @@ class TaskRepositoryImpl(val remoteDataSource: RemoteDataSource, val localDataSo
         }
     }
 
-    override fun deleteTask(id: Int): Flow<Boolean> {
+    override suspend fun deleteTask(id: Int): Flow<Boolean> {
         return flow {
             try {
                 localDataSource.deleteTask(id)
@@ -71,10 +83,10 @@ class TaskRepositoryImpl(val remoteDataSource: RemoteDataSource, val localDataSo
         }
     }
 
-    override fun addTask(task: TaskModel): Flow<Boolean> {
+    override suspend fun addTask(task: TaskEntity): Flow<Boolean> {
         return flow {
             try {
-                localDataSource.insertTask(task.mapToEntity())
+                localDataSource.insertTask(task)
                 val response = remoteDataSource.getDummyApi().first()
                 emit(isApiResponseSuccess(response))
             } catch (e: Exception) {

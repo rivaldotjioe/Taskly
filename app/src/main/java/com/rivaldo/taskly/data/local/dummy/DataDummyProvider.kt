@@ -1,5 +1,6 @@
 package com.rivaldo.taskly.data.local.dummy
 
+import com.rivaldo.taskly.data.mapper.DataMapper.mapToEntity
 import com.rivaldo.taskly.domain.StatusTask
 import com.rivaldo.taskly.domain.model.TaskModel
 
@@ -11,4 +12,5 @@ object DataDummyProvider {
         TaskModel(4, "Task 4", "Lorem ipsum", StatusTask.COMPLETED),
         TaskModel(5, "Task 3", "Lorem ipsum", StatusTask.COMPLETED),
     )
+    val listTaskEntity = listTask.map { it.mapToEntity() }.toMutableList()
 }

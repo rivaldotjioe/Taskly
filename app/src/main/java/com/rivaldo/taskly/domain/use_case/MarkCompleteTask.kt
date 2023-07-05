@@ -3,5 +3,5 @@ package com.rivaldo.taskly.domain.use_case
 import com.rivaldo.taskly.data.repository.interfaces.TaskRepository
 
 class MarkCompleteTask(val repository: TaskRepository) {
-    operator fun invoke(id: Int) = repository.markCompleteTask(id)
+    suspend operator fun invoke(id: Int) = repository.markCompleteTask(id)
 }

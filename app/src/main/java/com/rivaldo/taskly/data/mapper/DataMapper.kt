@@ -19,4 +19,6 @@ object DataMapper {
         description = this?.description,
         status = StatusTask.valueOf(this?.status ?: "")
     )
+
+    fun List<TaskEntity>.mapToModel() = this.map { it.mapToModel() }
 }
